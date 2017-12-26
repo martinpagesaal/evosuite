@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  * RandomLengthTestFactory class.
  * </p>
- * 
+ *
  * @author Gordon Fraser
  */
 public class RandomLengthTestFactory implements ChromosomeFactory<TestChromosome> {
@@ -46,7 +46,7 @@ public class RandomLengthTestFactory implements ChromosomeFactory<TestChromosome
 
 	/**
 	 * Create a random individual
-	 * 
+	 *
 	 * @param size
 	 */
 	private TestCase getRandomTestCase(int size) {
@@ -80,12 +80,13 @@ public class RandomLengthTestFactory implements ChromosomeFactory<TestChromosome
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * Generate a random chromosome
 	 */
 	@Override
 	public TestChromosome getChromosome() {
 		TestChromosome c = new TestChromosome();
+		RandomLengthTestFactory ramdo = new RandomLengthTestFactory();
 		c.setTestCase(getRandomTestCase(Properties.CHROMOSOME_LENGTH));
 		return c;
 	}
@@ -93,7 +94,7 @@ public class RandomLengthTestFactory implements ChromosomeFactory<TestChromosome
 	/**
 	 * Provided so that subtypes of this factory type can modify the returned
 	 * TestCase
-	 * 
+	 *
 	 * @return a {@link org.evosuite.testcase.TestCase} object.
 	 */
 	protected TestCase getNewTestCase() {

@@ -19,6 +19,7 @@
  */
 package org.evosuite.testcase.localsearch;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -28,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.evosuite.Properties;
+import org.evosuite.ga.ConstructionFailedException;
 import org.evosuite.ga.localsearch.LocalSearchBudget;
 import org.evosuite.ga.localsearch.LocalSearchObjective;
 import org.evosuite.symbolic.BranchCondition;
@@ -46,10 +48,12 @@ import org.evosuite.testcase.execution.ExecutionResult;
 import org.evosuite.testcase.statements.Statement;
 import org.evosuite.testcase.TestCase;
 import org.evosuite.testcase.TestChromosome;
+import org.evosuite.testcase.TestFactory;
 import org.evosuite.testcase.variable.VariableReference;
 import org.evosuite.testsuite.TestSuiteChromosome;
 import org.evosuite.testcase.statements.PrimitiveStatement;
 import org.evosuite.utils.Randomness;
+import org.evosuite.utils.generic.GenericMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +61,7 @@ import org.slf4j.LoggerFactory;
  * Attempts to create a new test case by applying DSE. The algorithm
  * systematically negates all uncovered branches trying to satisfy the missing
  * branches.
- * 
+ *
  * @author galeotti
  *
  */
@@ -76,7 +80,7 @@ public class DSETestGenerator {
 	/**
 	 * Creates a new test generator using a test suite. The test case will be
 	 * added to the test suite.
-	 * 
+	 *
 	 * @param suite
 	 */
 	public DSETestGenerator(TestSuiteChromosome suite) {
@@ -89,15 +93,15 @@ public class DSETestGenerator {
 	 * Applies DSE to the passed test using as symbolic variables only those
 	 * that are declared in the set of statement indexes. The objective is used
 	 * to detect if the DSE has improved the fitness.
-	 * 
+	 *
 	 * @param test
 	 *            the test case to be used as parameterised unit test
-	 * 
+	 *
 	 * @param statementIndexes
 	 *            a set with statement indexes with primitive value declarations
 	 *            that can be used as symbolic variables. This set must be
 	 *            non-empty.
-	 * 
+	 *
 	 * @param objective
 	 *            the local search objective to measure fitness improvement.
 	 */
@@ -199,7 +203,7 @@ public class DSETestGenerator {
 				logger.info("New test: " + newTest.toCode());
 				test.setTestCase(newTest);
 				// test.clearCachedMutationResults(); // TODO Mutation
-				test.clearCachedResults(); 
+				test.clearCachedResults();
 
 				if (objective.hasImproved(test)) {
 					DSEStats.getInstance().reportNewTestUseful();
@@ -225,7 +229,7 @@ public class DSETestGenerator {
 	 * covered two ways. If the test case belongs to a whole test suite, the
 	 * coverage of the whole test suite is used, otherwise, only the coverage of
 	 * the single test case.
-	 * 
+	 *
 	 * @param test
 	 *            the original test case
 	 * @param collectedPathCondition
@@ -248,7 +252,7 @@ public class DSETestGenerator {
 	 * Returns if the true and false branches for this were already covered. If
 	 * the test case belongs to a whole test suite, then the coverage of the
 	 * test suite is used, otherwise the single test case is used.
-	 * 
+	 *
 	 * @param className
 	 * @param methodName
 	 * @param branchIndex
@@ -283,7 +287,7 @@ public class DSETestGenerator {
 
 	/**
 	 * Creates a Solver query give a branch condition
-	 * 
+	 *
 	 * @param condition
 	 * @return
 	 */
@@ -300,7 +304,7 @@ public class DSETestGenerator {
 
 	/**
 	 * Returns true iff the constraint has at least one variable that is
-	 * 
+	 *
 	 * @param constraint
 	 * @param targets
 	 * @return
@@ -388,7 +392,7 @@ public class DSETestGenerator {
 	/**
 	 * Apply cone of influence reduction to constraints with respect to the last
 	 * constraint in the list
-	 * 
+	 *
 	 * @param constraints
 	 * @return
 	 */
@@ -419,7 +423,7 @@ public class DSETestGenerator {
 
 	/**
 	 * Get the statement that defines this variable
-	 * 
+	 *
 	 * @param test
 	 * @param name
 	 * @return
@@ -437,7 +441,7 @@ public class DSETestGenerator {
 
 	/**
 	 * Determine the set of variable referenced by this constraint
-	 * 
+	 *
 	 * @param constraint
 	 * @return
 	 */
@@ -450,7 +454,7 @@ public class DSETestGenerator {
 
 	/**
 	 * Recursively determine constraints in expression
-	 * 
+	 *
 	 * @param expr
 	 *            a {@link org.evosuite.symbolic.expr.Expression} object.
 	 * @param variables
@@ -458,6 +462,50 @@ public class DSETestGenerator {
 	 */
 	public static void getVariables(Expression<?> expr, Set<Variable<?>> variables) {
 		variables.addAll(expr.getVariables());
+	}	
+
+	public List<TestChromosome> generateNewTests(Method staticMethod, Class<?> targetClass) {
+
+		TestFactory testFactory = TestFactory.getInstance();
+		DefaultTestCase test = new DefaultTestCase();
+		GenericMethod gMethod = new GenericMethod(staticMethod, targetClass);
+		try{ 
+			testFactory.addMethod(test, gMethod, 0, 0);	
+		} catch(ConstructionFailedException e) {
+			logger.warn("Error creating default TestCase");
+		}
+		
+		List<BranchCondition> branchConditions = ConcolicExecution.executeConcolic(test);
+		final PathCondition collectedPathCondition = new PathCondition(branchConditions); 
+		
+		
+		logger.info("Done concolic execution");
+
+		if (collectedPathCondition.isEmpty()) {
+			return null;
+		}
+
+		for (BranchCondition c : collectedPathCondition.getBranchConditions()) {
+			logger.info(" -> " + c.getConstraint());
+		}
+
+		logger.info("Checking {} conditions", collectedPathCondition.size());
+
+		
+		
+		
+		
+		
+		
+		logger.info(test.toCode());
+		logger.info("Creating Thest Chromeose with DSE for {}", staticMethod.getName());
+		TestChromosome tChromo = new TestChromosome();
+		tChromo.setTestCase(test);
+		List<TestChromosome> res = new LinkedList<TestChromosome>();
+		res.add(tChromo);
+		return res;
+		// TODO Auto-generated method stub
+
 	}
 
 }

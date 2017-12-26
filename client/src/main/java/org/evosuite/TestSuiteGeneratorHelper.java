@@ -247,6 +247,8 @@ public class TestSuiteGeneratorHelper {
   }
 
   static TestGenerationStrategy getTestGenerationStrategy() {
+	LoggingUtils.getEvoLogger().info("static TestGenerationStrategy getTestGenerationStrategy()");
+	LoggingUtils.getEvoLogger().info(Properties.STRATEGY.toString());
     switch (Properties.STRATEGY) {
     case EVOSUITE:
       return new WholeTestSuiteStrategy();

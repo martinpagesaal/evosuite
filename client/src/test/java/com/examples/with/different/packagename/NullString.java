@@ -28,4 +28,12 @@ public class NullString {
 			return false;
 		}
 	}
+
+	public static boolean intIsTen(int a){
+		if(a == 10){
+			return true;
+		} else {
+			return false;
+		}
+	}
 }

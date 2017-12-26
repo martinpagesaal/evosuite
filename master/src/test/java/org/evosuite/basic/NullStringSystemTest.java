@@ -34,13 +34,18 @@ public class NullStringSystemTest extends SystemTestBase {
 
 	@Test
 	public void testNullString() {
+		
+		Properties.CLIENT_ON_THREAD = true;
+		Properties.TIMEOUT = Integer.MAX_VALUE;
+		Properties.CONCOLIC_TIMEOUT = Integer.MAX_VALUE;
+		
 		EvoSuite evosuite = new EvoSuite();
 
 		String targetClass = NullString.class.getCanonicalName();
 
 		Properties.TARGET_CLASS = targetClass;
 
-		String[] command = new String[] { "-generateSuite", "-class", targetClass };
+		String[] command = new String[] { "-generateSuite", "-class", targetClass, "-Dstrategy", "DSE", "-Dlog.level", "info", "-Dclient_on_thread", "true" };
 
 		Object result = evosuite.parseCommandLine(command);
 		GeneticAlgorithm<?> ga = getGAFromResult(result);
