@@ -19,6 +19,7 @@
  */
 package org.evosuite.testcase.localsearch;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -28,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.evosuite.Properties;
+import org.evosuite.ga.ConstructionFailedException;
 import org.evosuite.ga.localsearch.LocalSearchBudget;
 import org.evosuite.ga.localsearch.LocalSearchObjective;
 import org.evosuite.symbolic.BranchCondition;
@@ -46,10 +48,12 @@ import org.evosuite.testcase.execution.ExecutionResult;
 import org.evosuite.testcase.statements.Statement;
 import org.evosuite.testcase.TestCase;
 import org.evosuite.testcase.TestChromosome;
+import org.evosuite.testcase.TestFactory;
 import org.evosuite.testcase.variable.VariableReference;
 import org.evosuite.testsuite.TestSuiteChromosome;
 import org.evosuite.testcase.statements.PrimitiveStatement;
 import org.evosuite.utils.Randomness;
+import org.evosuite.utils.generic.GenericMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -458,6 +462,43 @@ public class DSETestGenerator {
 	 */
 	public static void getVariables(Expression<?> expr, Set<Variable<?>> variables) {
 		variables.addAll(expr.getVariables());
+	}
+	
+	public List<TestChromosome> generateNewTests(Method staticMethod, Class<?> targetClass) {
+		TestFactory testFactory = TestFactory.getInstance();
+		DefaultTestCase test = new DefaultTestCase();
+		GenericMethod gMethod = new GenericMethod(staticMethod, targetClass);
+		try{ 
+			testFactory.addMethod(test, gMethod, 0, 0);	
+		} catch(ConstructionFailedException e) {
+			logger.warn("Error creating default TestCase");
+		}
+	
+		List<BranchCondition> branchConditions = ConcolicExecution.executeConcolic(test);
+		final PathCondition collectedPathCondition = new PathCondition(branchConditions); 
+		
+		
+		logger.error("Done concolic execution");
+	 
+	 	if (collectedPathCondition.isEmpty()) {
+	 		return null;
+	 	}
+	 
+		for (BranchCondition c : collectedPathCondition.getBranchConditions()) {
+	 		logger.info(" -> " + c.getConstraint());
+		}
+	 
+	 	logger.info("Checking {} conditions", collectedPathCondition.size());
+	 
+	 		
+	 	logger.error(test.toCode());
+		logger.error("Creating Thest Chromeose with DSE for {}", staticMethod.getName());
+		TestChromosome tChromo = new TestChromosome();
+		tChromo.setTestCase(test);
+		List<TestChromosome> res = new LinkedList<TestChromosome>();
+		res.add(tChromo);
+		return res;
+		// TODO Auto-generated method stub
 	}
 
 }

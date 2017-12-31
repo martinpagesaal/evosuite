@@ -42,6 +42,7 @@ import org.evosuite.strategy.TestGenerationStrategy;
 import org.evosuite.testcase.TestChromosome;
 import org.evosuite.testcase.TestFitnessFunction;
 import org.evosuite.testcase.execution.ExecutionTracer;
+import org.evosuite.testcase.localsearch.DSETestGenerator;
 import org.evosuite.testsuite.TestSuiteChromosome;
 import org.evosuite.testsuite.TestSuiteFitnessFunction;
 import org.evosuite.testsuite.similarity.DiversityObserver;
@@ -124,16 +125,18 @@ public class DSEStrategy extends TestGenerationStrategy {
 		TestSuiteChromosome result = new TestSuiteChromosome();
 		for (Method staticMethod : staticMethods) {
 			if(staticMethod.getName().indexOf("__") != 0) {
-				List<TestChromosome> testCases = generateTests(staticMethod);
+				List<TestChromosome> testCases = generateTests(staticMethod, targetClass);
 				result.addTests(testCases);
 			}
 		}
 		return result;
 	}
 
-	private List<TestChromosome> generateTests(Method staticMethod) {
-		List<TestChromosome> testCases = new LinkedList<TestChromosome>();
-		// TODO DSE Algorithm goes here
+	private List<TestChromosome> generateTests(Method staticMethod, Class<?> targetClass) {
+		LoggingUtils.getEvoLogger().error("Starting DSE for " + staticMethod.getName());
+		DSETestGenerator dseGenerator = new DSETestGenerator();
+		List<TestChromosome> testCases = dseGenerator.generateNewTests(staticMethod, targetClass);
+		LoggingUtils.getEvoLogger().error("DSE GENERATED " + testCases.size());
 		return testCases;
 	}
 
