@@ -123,8 +123,10 @@ public class DSEStrategy extends TestGenerationStrategy {
 		final Set<Method> staticMethods = getStaticMethods(targetClass);
 		TestSuiteChromosome result = new TestSuiteChromosome();
 		for (Method staticMethod : staticMethods) {
-			List<TestChromosome> testCases = generateTests(staticMethod);
-			result.addTests(testCases);
+			if(staticMethod.getName().indexOf("__") != 0) {
+				List<TestChromosome> testCases = generateTests(staticMethod);
+				result.addTests(testCases);
+			}
 		}
 		return result;
 	}
