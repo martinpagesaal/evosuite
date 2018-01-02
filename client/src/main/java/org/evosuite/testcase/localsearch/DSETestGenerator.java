@@ -475,7 +475,7 @@ public class DSETestGenerator {
 		}
 	
 		List<BranchCondition> branchConditions = ConcolicExecution.executeConcolic(test);
-		final PathCondition collectedPathCondition = new PathCondition(branchConditions); 
+		PathCondition collectedPathCondition = new PathCondition(branchConditions); 
 		
 		
 		logger.error("Done concolic execution");
@@ -490,6 +490,57 @@ public class DSETestGenerator {
 	 
 	 	logger.info("Checking {} conditions", collectedPathCondition.size());
 	 
+	 	
+	 	int conditionIndex = collectedPathCondition.size() - 1; // Get last condition;
+		BranchCondition condition = collectedPathCondition.get(conditionIndex);
+		Constraint<?> currentConstraint = condition.getConstraint();
+		List<Constraint<?>> query = buildQuery(collectedPathCondition, conditionIndex);
+		DSEStats.getInstance().reportNewConstraints(query);
+
+		// Get solution
+		Solver solver = SolverFactory.getInstance().buildNewSolver();
+
+		long startSolvingTime = System.currentTimeMillis();
+		SolverCache solverCache = SolverCache.getInstance();
+		SolverResult solverResult = solverCache.solve(solver, query);
+		long estimatedSolvingTime = System.currentTimeMillis() - startSolvingTime;
+		DSEStats.getInstance().reportNewSolvingTime(estimatedSolvingTime);
+
+		if (solverResult == null) {
+			logger.info("Found no result");
+		} else if (solverResult.isUNSAT()) {
+			logger.info("Found UNSAT result");
+			DSEStats.getInstance().reportNewUNSAT();
+		} else {
+			logger.info("Found SAT result");
+			DSEStats.getInstance().reportNewSAT();
+			Map<String, Object> model = solverResult.getModel();
+//			TestCase oldTest = test.getTestCase();
+//			ExecutionResult oldResult = test.getLastExecutionResult().clone();
+//			TestCase newTest = updateTest(oldTest, model);
+//			logger.info("New test: " + newTest.toCode());
+//			test.setTestCase(newTest);
+//			// test.clearCachedMutationResults(); // TODO Mutation
+//			test.clearCachedResults(); 
+//
+//			if (objective.hasImproved(test)) {
+//				DSEStats.getInstance().reportNewTestUseful();
+//				logger.info("Solution improves fitness, finishing DSE");
+//				/* new test was created */
+//				return test;
+//			} else {
+//				DSEStats.getInstance().reportNewTestUnuseful();
+//				test.setTestCase(oldTest);
+//				// FIXXME: How can this be null?
+//				if (oldResult != null)
+//					test.setLastExecutionResult(oldResult);
+//				// TODO Mutation
+//			}
+		}
+	 	
+	 	
+	 	
+	 	
 	 		
 	 	logger.error(test.toCode());
 		logger.error("Creating Thest Chromeose with DSE for {}", staticMethod.getName());
