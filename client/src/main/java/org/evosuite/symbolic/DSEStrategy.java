@@ -31,6 +31,7 @@ import org.evosuite.Properties;
 import org.evosuite.Properties.Criterion;
 import org.evosuite.coverage.TestFitnessFactory;
 import org.evosuite.ga.FitnessFunction;
+import org.evosuite.ga.metaheuristics.DSE;
 import org.evosuite.ga.metaheuristics.GeneticAlgorithm;
 import org.evosuite.ga.stoppingconditions.MaxStatementsStoppingCondition;
 import org.evosuite.result.TestGenerationResultBuilder;
@@ -56,6 +57,12 @@ public class DSEStrategy extends TestGenerationStrategy {
 	public TestSuiteChromosome generateTests() {
 		LoggingUtils.getEvoLogger().info("* Setting up DSE test suite generation");
 
+		PropertiesSuiteGAFactory algorithmFactory = new PropertiesSuiteGAFactory();
+		DSE<TestSuiteChromosome> algorithm = (DSE<TestSuiteChromosome>)algorithmFactory.getSearchAlgorithm();
+
+//		if(Properties.SERIALIZE_GA || Properties.CLIENT_ON_THREAD)
+		TestGenerationResultBuilder.getInstance().setGeneticAlgorithm(algorithm);
+		
 		long startTime = System.currentTimeMillis() / 1000;
 
 		Properties.CRITERION = new Criterion[] { Properties.Criterion.BRANCH };

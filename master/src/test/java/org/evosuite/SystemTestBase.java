@@ -30,6 +30,7 @@ import org.evosuite.Properties.StoppingCondition;
 import org.evosuite.coverage.archive.TestsArchive;
 import org.evosuite.coverage.exception.ExceptionCoverageFactory;
 import org.evosuite.coverage.line.LineCoverageSuiteFitness;
+import org.evosuite.ga.metaheuristics.DSE;
 import org.evosuite.ga.metaheuristics.GeneticAlgorithm;
 import org.evosuite.result.TestGenerationResult;
 import org.evosuite.runtime.RuntimeSettings;
@@ -351,5 +352,13 @@ public class SystemTestBase {
 		assert(results.size() == 1);
 		//return results.iterator().next().getGeneticAlgorithm();
 		return results.get(0).get(0).getGeneticAlgorithm();
+	}
+	
+	protected DSE<?> getDSEFromResult(Object result) {
+		assert(result instanceof List);
+		List<List<TestGenerationResult>> results = (List<List<TestGenerationResult>>)result;
+		assert(results.size() == 1);
+		//return results.iterator().next().getGeneticAlgorithm();
+		return (DSE<?>)(results.get(0).get(0).getGeneticAlgorithm());
 	}
 }

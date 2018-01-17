@@ -5,9 +5,11 @@ import java.io.PrintStream;
 
 import org.evosuite.EvoSuite;
 import org.evosuite.Properties;
+import org.evosuite.Properties.Algorithm;
 import org.evosuite.Properties.Criterion;
 import org.evosuite.Properties.Strategy;
 import org.evosuite.SystemTestBase;
+import org.evosuite.ga.metaheuristics.DSE;
 import org.evosuite.ga.metaheuristics.GeneticAlgorithm;
 import org.evosuite.strategy.TestGenerationStrategy;
 import org.evosuite.testsuite.TestSuiteChromosome;
@@ -31,6 +33,7 @@ public class DSEBasicIntSystemTest extends SystemTestBase {
 		Properties.PURE_INSPECTORS = true;
 		Properties.CLIENT_ON_THREAD = true;
 		Properties.STRATEGY = Strategy.DSE;
+		Properties.ALGORITHM = Algorithm.DSE;
 		Properties.CRITERION = new Criterion[] { Criterion.BRANCH };
 		
 		Properties.TIMEOUT = 500000;
@@ -58,12 +61,15 @@ public class DSEBasicIntSystemTest extends SystemTestBase {
 		EvoSuite evosuite = new EvoSuite();
 
 		String targetClass = BasicInt.class.getCanonicalName();
+		
+		
+		Properties.TARGET_CLASS = targetClass;
 
 		String[] command = new String[] { "-generateSuite", "-class", targetClass };
 
 		Object result = evosuite.parseCommandLine(command);
-		GeneticAlgorithm<?> ga = getGAFromResult(result);
-		TestSuiteChromosome best = (TestSuiteChromosome) ga.getBestIndividual();
+		DSE<?> dse = getDSEFromResult(result);
+		TestSuiteChromosome best = (TestSuiteChromosome) dse.getPopulation().get(0);
 		System.out.println("EvolvedTestSuite:\n" + best);
 
 		int goals = TestGenerationStrategy.getFitnessFactories().get(0).getCoverageGoals().size(); // assuming

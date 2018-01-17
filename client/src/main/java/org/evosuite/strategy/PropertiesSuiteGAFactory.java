@@ -117,6 +117,8 @@ public class PropertiesSuiteGAFactory extends PropertiesSearchAlgorithmFactory<T
 			return new RegressionTestSuiteChromosomeFactory();
 		case MOSUITE:
 			return new TestSuiteChromosomeFactory(new RandomLengthTestFactory());
+		case DSE:
+			return new TestSuiteChromosomeFactory(new RandomLengthTestFactory());
 		default:
 			throw new RuntimeException("Unsupported test factory: "
 					+ Properties.TEST_FACTORY);
@@ -204,6 +206,15 @@ public class PropertiesSuiteGAFactory extends PropertiesSearchAlgorithmFactory<T
 			logger.info("Chosen search algorithm: Random");
 			{
                 RandomSearch<TestSuiteChromosome> ga = new RandomSearch<TestSuiteChromosome>(factory);
+                if (Properties.TEST_ARCHIVE)
+                        ga.setArchive(TestsArchive.instance);
+
+                return ga;
+			}
+		case DSE:
+			logger.info("Chosen search algorithm: DSE");
+			{
+                DSE<TestSuiteChromosome> ga = new DSE<TestSuiteChromosome>(factory);
                 if (Properties.TEST_ARCHIVE)
                         ga.setArchive(TestsArchive.instance);
 
