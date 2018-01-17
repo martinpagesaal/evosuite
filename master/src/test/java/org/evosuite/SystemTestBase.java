@@ -353,12 +353,4 @@ public class SystemTestBase {
 		//return results.iterator().next().getGeneticAlgorithm();
 		return results.get(0).get(0).getGeneticAlgorithm();
 	}
-	
-	protected DSE<?> getDSEFromResult(Object result) {
-		assert(result instanceof List);
-		List<List<TestGenerationResult>> results = (List<List<TestGenerationResult>>)result;
-		assert(results.size() == 1);
-		//return results.iterator().next().getGeneticAlgorithm();
-		return (DSE<?>)(results.get(0).get(0).getGeneticAlgorithm());
-	}
 }

@@ -121,9 +121,9 @@ public class DSEStrategy extends TestGenerationStrategy {
 
 		// Search is finished, send statistics
 		sendExecutionStatistics();
-
+		
+		algorithm.setTestSuiteChromosome(testSuite);
 		return testSuite;
-
 	}
 
 	private TestSuiteChromosome generateSuite() {
