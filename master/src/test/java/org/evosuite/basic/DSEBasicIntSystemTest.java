@@ -14,6 +14,7 @@ import org.evosuite.ga.metaheuristics.DSE;
 import org.evosuite.ga.metaheuristics.GeneticAlgorithm;
 import org.evosuite.strategy.TestGenerationStrategy;
 import org.evosuite.testsuite.TestSuiteChromosome;
+import org.evosuite.utils.LoggingUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,26 +37,20 @@ public class DSEBasicIntSystemTest extends SystemTestBase {
 		Properties.STRATEGY = Strategy.DSE;
 		Properties.ALGORITHM = Algorithm.DSE;
 		Properties.CRITERION = new Criterion[] { Criterion.BRANCH };
-		
 		Properties.TIMEOUT = 500000;
-		
-		
 		Properties.LOG_LEVEL = "debug";
-		Properties.PRINT_TO_SYSTEM = true;
-		ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-        PrintStream outStream = new PrintStream(byteStream);
-        System.setOut(outStream);
 
+		LoggingUtils.changeLogbackFile(LoggingUtils.getLogbackFileName());
 	}
 
 	@Test
 	public void testDSENumbers() {
 		
 		
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
+//		ByteArrayOutputStream out = new ByteArrayOutputStream();
 //		System.setOut(new PrintStream(out));
-
-		ByteArrayOutputStream err = new ByteArrayOutputStream();
+//
+//		ByteArrayOutputStream err = new ByteArrayOutputStream();
 //		System.setErr(new PrintStream(err));
 			
 			
@@ -81,23 +76,17 @@ public class DSEBasicIntSystemTest extends SystemTestBase {
 //		Assert.assertEquals("Non-optimal coverage: ", 1d, best.getCoverage(), 0.001);
 		
 		
-		Logger logger = LoggerFactory.getLogger(DSEBasicIntSystemTest.class);
-		
-		final String warnMsg = "this should go to std out";
-		final String errMsg = "this should go to std err";
-
-		logger.warn(warnMsg);
-		logger.error(errMsg);
-
-		String printedOut = out.toString();
-		String printedErr = err.toString();
-
-		System.out.println("printedOut");
-		System.out.println(printedOut);
-		
-		System.out.println("printedErr");
-		System.out.println(printedErr);
-		
+//		Logger logger = LoggerFactory.getLogger(DSEBasicIntSystemTest.class);
+//		
+//		final String warnMsg = "this should go to std out";
+//		final String errMsg = "this should go to std err";
+//
+//		logger.warn(warnMsg);
+//		logger.error(errMsg);
+//
+//		String printedOut = out.toString();
+//		String printedErr = err.toString();
+//
 //		Assert.assertTrue("Content of std out is: " + printedOut,
 //		                  printedOut.contains(warnMsg));
 //		Assert.assertTrue("Content of std err is: " + printedErr,
