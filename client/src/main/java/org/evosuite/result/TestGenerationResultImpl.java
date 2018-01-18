@@ -205,11 +205,12 @@ class TestGenerationResultImpl implements TestGenerationResult {
 		StringBuilder builder = new StringBuilder();
 		for(String testName : testCases.keySet()) {
 			builder.append("Test "+testName+": \n");
-			builder.append(" "+testLineCoverage.get(testName));
+			builder.append(" Code: "+testCases.get(testName));
+			builder.append(" L.Coverage: "+testLineCoverage.get(testName));
 			builder.append("\n");
-			builder.append(" "+testBranchCoverage.get(testName));
+			builder.append(" B.Coverage: "+testBranchCoverage.get(testName));
 			builder.append("\n");
-			builder.append(" "+testMutantCoverage.get(testName));
+			builder.append(" M.Coverage: "+testMutantCoverage.get(testName));
 			builder.append("\n");
 		}
 		builder.append("Uncovered lines: ");
