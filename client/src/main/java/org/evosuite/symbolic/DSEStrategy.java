@@ -140,10 +140,10 @@ public class DSEStrategy extends TestGenerationStrategy {
 	}
 
 	private List<TestChromosome> generateTests(Method staticMethod, Class<?> targetClass) {
-		LoggingUtils.getEvoLogger().error("Starting DSE for " + staticMethod.getName());
+		LoggingUtils.getEvoLogger().info("Starting DSE for " + staticMethod.getName());
 		DSETestGenerator dseGenerator = new DSETestGenerator();
 		List<TestChromosome> testCases = dseGenerator.generateNewTests(staticMethod, targetClass);
-		LoggingUtils.getEvoLogger().error("DSE GENERATED " + testCases.size());
+		LoggingUtils.getEvoLogger().info("DSE GENERATED " + testCases.size());
 		return testCases;
 	}
 

@@ -3,6 +3,7 @@ package org.evosuite.basic;
 import java.io.ByteArrayOutputStream;
 import java.io.Console;
 import java.io.PrintStream;
+import java.util.List;
 
 import org.evosuite.EvoSuite;
 import org.evosuite.Properties;
@@ -12,6 +13,7 @@ import org.evosuite.Properties.Strategy;
 import org.evosuite.SystemTestBase;
 import org.evosuite.ga.metaheuristics.DSE;
 import org.evosuite.ga.metaheuristics.GeneticAlgorithm;
+import org.evosuite.result.TestGenerationResult;
 import org.evosuite.strategy.TestGenerationStrategy;
 import org.evosuite.testsuite.TestSuiteChromosome;
 import org.evosuite.utils.LoggingUtils;
@@ -37,63 +39,34 @@ public class DSEBasicIntSystemTest extends SystemTestBase {
 		Properties.STRATEGY = Strategy.DSE;
 		Properties.ALGORITHM = Algorithm.DSE;
 		Properties.CRITERION = new Criterion[] { Criterion.BRANCH };
-		Properties.TIMEOUT = 500000;
+		Properties.TIMEOUT = 5000000;
+		Properties.CONCOLIC_TIMEOUT= 5000000;
 		Properties.LOG_LEVEL = "debug";
-
+		Properties.PRIMITIVE_POOL = 0.0;
 		LoggingUtils.changeLogbackFile(LoggingUtils.getLogbackFileName());
 	}
 
 	@Test
 	public void testDSENumbers() {
 		
-		
-//		ByteArrayOutputStream out = new ByteArrayOutputStream();
-//		System.setOut(new PrintStream(out));
-//
-//		ByteArrayOutputStream err = new ByteArrayOutputStream();
-//		System.setErr(new PrintStream(err));
-			
-			
 		EvoSuite evosuite = new EvoSuite();
 
 		String targetClass = BasicInt.class.getCanonicalName();
-		
 		
 		Properties.TARGET_CLASS = targetClass;
 
 		String[] command = new String[] { "-generateSuite", "-class", targetClass };
 
 		Object result = evosuite.parseCommandLine(command);
+		LoggingUtils.getEvoLogger().info("\n\nResult Info\n" + ((List<List<TestGenerationResult>>)result).get(0).get(0));
 		DSE<?> dse = (DSE<?>)getGAFromResult(result);
 		TestSuiteChromosome best = dse.getTestSuiteChromosome();
-		System.out.println("EvolvedTestSuite:\n" + best);
-
-		int goals = TestGenerationStrategy.getFitnessFactories().get(0).getCoverageGoals().size(); // assuming
-																									// single
-																									// fitness
-																									// function
+		LoggingUtils.getEvoLogger().info("EvolvedTestSuite:\n" + best);
+		int goals = TestGenerationStrategy.getFitnessFactories().get(0).getCoverageGoals().size(); // assuming single fitness function
+		
+		LoggingUtils.getEvoLogger().info("\n\nDone Test suite : Goal =" + goals);
 //		Assert.assertEquals("Wrong number of goals: ", 3, goals);
 //		Assert.assertEquals("Non-optimal coverage: ", 1d, best.getCoverage(), 0.001);
 		
-		
-//		Logger logger = LoggerFactory.getLogger(DSEBasicIntSystemTest.class);
-//		
-//		final String warnMsg = "this should go to std out";
-//		final String errMsg = "this should go to std err";
-//
-//		logger.warn(warnMsg);
-//		logger.error(errMsg);
-//
-//		String printedOut = out.toString();
-//		String printedErr = err.toString();
-//
-//		Assert.assertTrue("Content of std out is: " + printedOut,
-//		                  printedOut.contains(warnMsg));
-//		Assert.assertTrue("Content of std err is: " + printedErr,
-//		                  printedErr.contains(errMsg));
-//		Assert.assertTrue("Content of std out is: " + printedOut,
-//		                  !printedOut.contains(errMsg));
-//		Assert.assertTrue("Content of std err is: " + printedErr,
-//		                  !printedErr.contains(warnMsg));
 	}
 }

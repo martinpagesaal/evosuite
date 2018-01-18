@@ -478,7 +478,7 @@ public class DSETestGenerator {
 		PathCondition collectedPathCondition = new PathCondition(branchConditions);
 
 
-		logger.error("Done concolic execution");
+		logger.info("Done concolic execution");
 
 	 	if (collectedPathCondition.isEmpty()) {
 	 		return null;
@@ -546,8 +546,8 @@ public class DSETestGenerator {
 
 
 
-	 	logger.error(test.toCode());
-		logger.error("Creating Thest Chromeose with DSE for {}", staticMethod.getName());
+	 	logger.info(test.toCode());
+		logger.info("Creating Thest Chromeose with DSE for {}", staticMethod.getName());
 		TestChromosome tChromo = new TestChromosome();
 		tChromo.setTestCase(test);
 		List<TestChromosome> res = new LinkedList<TestChromosome>();
