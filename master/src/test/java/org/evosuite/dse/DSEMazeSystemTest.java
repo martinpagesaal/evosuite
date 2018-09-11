@@ -60,7 +60,7 @@ public class DSEMazeSystemTest extends SystemTestBase {
 	public void init() {
 		Properties.VIRTUAL_FS = true;
 		Properties.VIRTUAL_NET = true;
-		Properties.LOG_LEVEL = "debug";
+		Properties.LOG_LEVEL = "info";
 		LoggingUtils.changeLogbackFile(LoggingUtils.getLogbackFileName());
 		Properties.SEARCH_BUDGET = 50000;
 		// Properties.CONCOLIC_TIMEOUT = Integer.MAX_VALUE;

@@ -133,7 +133,11 @@ public final class CVC4Solver extends SmtSolver {
 
 		String cmd = buildCVC4cmd(cvcTimeout);
 
+		logger.debug("CVC4 Command:");
+		logger.debug(cmd);
+
 		ByteArrayOutputStream stdout = new ByteArrayOutputStream();
+
 		try {
 			launchNewSolvingProcess(cmd, smtQueryStr, (int) cvcTimeout, stdout);
 			String output = stdout.toString("UTF-8");
@@ -181,8 +185,10 @@ public final class CVC4Solver extends SmtSolver {
 		} catch (IOException e) {
 			if (e.getMessage().contains("Permission denied")) {
 				logger.error("No permissions for running CVC4 binary");
+				logger.error(e.getMessage());
 			} else {
 				logger.error("IO Exception during launching of CVC4 command");
+				logger.error(e.getMessage());
 			}
 			throw e;
 
