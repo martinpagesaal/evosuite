@@ -33,6 +33,7 @@ import org.evosuite.Properties.Strategy;
 import org.evosuite.SystemTestBase;
 import org.evosuite.ga.metaheuristics.GeneticAlgorithm;
 import org.evosuite.testsuite.TestSuiteChromosome;
+import org.evosuite.utils.LoggingUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -59,6 +60,8 @@ public class DSEMazeSystemTest extends SystemTestBase {
 	public void init() {
 		Properties.VIRTUAL_FS = true;
 		Properties.VIRTUAL_NET = true;
+		Properties.LOG_LEVEL = "debug";
+		LoggingUtils.changeLogbackFile(LoggingUtils.getLogbackFileName());
 		Properties.SEARCH_BUDGET = 50000;
 		// Properties.CONCOLIC_TIMEOUT = Integer.MAX_VALUE;
 		Properties.RESET_STATIC_FIELD_GETS = true;
