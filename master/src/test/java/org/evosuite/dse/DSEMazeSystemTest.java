@@ -72,6 +72,7 @@ public class DSEMazeSystemTest extends SystemTestBase {
 		}
 
 		Properties.DSE_SOLVER = SolverType.CVC4_SOLVER;
+		Properties.DSE_CONSTRAINT_SOLVER_TIMEOUT_MILLIS = 3000;
 
 		Properties.STOPPING_CONDITION = StoppingCondition.MAXTESTS;
 		Properties.SEARCH_BUDGET = 300; // tests

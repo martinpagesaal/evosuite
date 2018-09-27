@@ -55,6 +55,7 @@ import org.evosuite.symbolic.solver.smt.SmtRealVariable;
 import org.evosuite.symbolic.solver.smt.SmtStringVariable;
 import org.evosuite.symbolic.solver.smt.SmtVariable;
 import org.evosuite.symbolic.solver.smt.SmtVariableCollector;
+import org.evosuite.utils.LoggingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,14 +89,14 @@ public final class CVC4Solver extends SmtSolver {
 
 		if (Properties.CVC4_PATH == null) {
 			String errMsg = "Property CVC4_PATH should be setted in order to use the CVC4 Solver!";
-			logger.error(errMsg);
+			LoggingUtils.getEvoLogger().error(errMsg);
 			throw new IllegalStateException(errMsg);
 		}
 
 		// CVC4 has very little support for non-linear arithemtics
 		// In fact, it cannot even produce models for non-linear theories
 		if (!reWriteNonLinearConstraints && hasNonLinearConstraints(constraints)) {
-			logger.debug("Skipping query due to (unsupported) non-linear constraints");
+			LoggingUtils.getEvoLogger().debug("Skipping query due to (unsupported) non-linear constraints");
 			throw new SolverEmptyQueryException("Skipping query due to (unsupported) non-linear constraints");
 		}
 
@@ -110,7 +111,7 @@ public final class CVC4Solver extends SmtSolver {
 		SmtQuery query = buildSmtQuery(constraints);
 
 		if (query.getFunctionDeclarations().isEmpty()) {
-			logger.debug("No variables found during the creation of the SMT query.");
+			LoggingUtils.getEvoLogger().debug("No variables found during the creation of the SMT query.");
 			throw new SolverEmptyQueryException("No variables found during the creation of the SMT query.");
 		}
 
@@ -124,26 +125,26 @@ public final class CVC4Solver extends SmtSolver {
 		String smtQueryStr = printer.print(query);
 
 		if (smtQueryStr == null) {
-			logger.debug("No variables found during constraint solving.");
+			LoggingUtils.getEvoLogger().debug("No variables found during constraint solving.");
 			throw new SolverEmptyQueryException("No variables found during constraint solving.");
 		}
 
-		logger.debug("CVC4 Query:");
-		logger.debug(smtQueryStr);
+		LoggingUtils.getEvoLogger().debug("CVC4 Query:");
+		LoggingUtils.getEvoLogger().debug(smtQueryStr);
 
 		String cmd = buildCVC4cmd(cvcTimeout);
 
-		logger.debug("CVC4 Command:");
-		logger.debug(cmd);
+		LoggingUtils.getEvoLogger().debug("CVC4 Command:");
+		LoggingUtils.getEvoLogger().debug(cmd);
 
 		ByteArrayOutputStream stdout = new ByteArrayOutputStream();
 
 		try {
 			launchNewSolvingProcess(cmd, smtQueryStr, (int) cvcTimeout, stdout);
 			String output = stdout.toString("UTF-8");
-
+			LoggingUtils.getEvoLogger().info("Solver Result Str: [" + output + "]");
 			if (output.startsWith("unknown")) {
-				logger.debug("timeout reached when using cvc4");
+				LoggingUtils.getEvoLogger().debug("timeout reached when using cvc4");
 				throw new SolverTimeoutException();
 			}
 
@@ -156,7 +157,7 @@ public final class CVC4Solver extends SmtSolver {
 
 			if (output.contains("error")) {
 				String errMsg = "An error occurred while executing CVC4!";
-				logger.error(errMsg);
+				LoggingUtils.getEvoLogger().error(errMsg);
 				throw new SolverErrorException(errMsg);
 			}
 
@@ -174,7 +175,7 @@ public final class CVC4Solver extends SmtSolver {
 				// check if the found solution is useful
 				boolean check = checkSAT(constraints, solverResult);
 				if (!check) {
-					logger.debug("CVC4 solution does not solve the original constraint system. ");
+					LoggingUtils.getEvoLogger().debug("CVC4 solution does not solve the original constraint system. ");
 					SolverResult unsatResult = SolverResult.newUNSAT();
 					return unsatResult;
 				}
@@ -184,11 +185,11 @@ public final class CVC4Solver extends SmtSolver {
 
 		} catch (IOException e) {
 			if (e.getMessage().contains("Permission denied")) {
-				logger.error("No permissions for running CVC4 binary");
-				logger.error(e.getMessage());
+				LoggingUtils.getEvoLogger().error("No permissions for running CVC4 binary");
+				LoggingUtils.getEvoLogger().error(e.getMessage());
 			} else {
-				logger.error("IO Exception during launching of CVC4 command");
-				logger.error(e.getMessage());
+				LoggingUtils.getEvoLogger().error("IO Exception during launching of CVC4 command");
+				LoggingUtils.getEvoLogger().error(e.getMessage());
 			}
 			throw e;
 
