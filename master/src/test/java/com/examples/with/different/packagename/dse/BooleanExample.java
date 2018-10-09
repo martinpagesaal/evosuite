@@ -7,7 +7,6 @@ public class BooleanExample {
 	}
 
 	public static int isTrue(boolean value) {
-		new BooleanExample();
 		if (value == true) {
 			return 1;
 		} else {
