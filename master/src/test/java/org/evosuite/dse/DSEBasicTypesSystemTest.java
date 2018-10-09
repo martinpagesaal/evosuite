@@ -28,6 +28,7 @@ import com.examples.with.different.packagename.dse.FloatExample;
 import com.examples.with.different.packagename.dse.LongExample;
 import com.examples.with.different.packagename.dse.ShortExample;
 import com.examples.with.different.packagename.dse.StringExample;
+import com.examples.with.different.packagename.dse.ArrayExample;
 
 import org.evosuite.EvoSuite;
 import org.evosuite.Properties;
@@ -150,6 +151,14 @@ public class DSEBasicTypesSystemTest extends SystemTestBase  {
         assertFalse(best.getTests().isEmpty());
         assertEquals(4, best.getNumOfCoveredGoals());
         assertEquals(1, best.getNumOfNotCoveredGoals());
+    }
+
+    @Test
+    public void testArray() {
+        TestSuiteChromosome best = this.testTargetClass(ArrayExample.class.getCanonicalName());
+        assertFalse(best.getTests().isEmpty());
+        assertEquals(6, best.getNumOfCoveredGoals());
+        assertEquals(21, best.getNumOfNotCoveredGoals());
     }
 
     private TestSuiteChromosome testTargetClass(String targetClass) {
