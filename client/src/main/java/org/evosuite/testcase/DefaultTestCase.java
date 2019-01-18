@@ -48,6 +48,7 @@ import org.evosuite.testcase.statements.environment.AccessedEnvironment;
 import org.evosuite.testcase.execution.CodeUnderTestException;
 import org.evosuite.testcase.execution.Scope;
 import org.evosuite.testcase.variable.*;
+import org.evosuite.utils.LoggingUtils;
 import org.evosuite.utils.generic.GenericClass;
 import org.evosuite.utils.generic.GenericField;
 import org.evosuite.utils.ListenableList;

@@ -43,6 +43,8 @@ import org.evosuite.utils.generic.GenericClass;
 import org.evosuite.utils.LoggingUtils;
 import org.evosuite.utils.Randomness;
 
+import javax.faces.el.VariableResolver;
+
 /**
  * An array statement creates a new array
  * 
@@ -85,6 +87,7 @@ public class ArrayStatement extends AbstractStatement {
 	}
 
 	private int[] lengths;
+	private List<VariableReference> variableLengths;
 
 	/**
 	 * <p>
@@ -165,12 +168,31 @@ public class ArrayStatement extends AbstractStatement {
 		this(tc, new ArrayReference(tc, new GenericClass(type), length), length);
 	}
 
+	public ArrayStatement(TestCase tc, java.lang.reflect.Type type, VariableReference... length) {
+		this(tc, new ArrayReference(tc, new GenericClass(type), length), length);
+
+	}
+
+	public ArrayStatement(TestCase tc, ArrayReference arrayReference, VariableReference... length) {
+		super(tc,arrayReference);
+		setLengths(length);
+		arrayReference.setLengths(length);
+	}
+
 	/** {@inheritDoc} */
 	@Override
 	public Statement copy(TestCase newTestCase, int offset) {
-		ArrayStatement copy = new ArrayStatement(newTestCase, retval.getType(), lengths);
-		// copy.assertions = copyAssertions(newTestCase, offset);
-		return copy;
+		if(this.hasVariableLengths()) {
+
+			VariableReference[] newVariableLengths = new VariableReference[variableLengths.size()];
+			for (int i = 0; i < variableLengths.size(); i++) {
+				newVariableLengths[i] = (variableLengths.get(i).copy(newTestCase, offset));
+			}
+
+			return new ArrayStatement(newTestCase, retval.getType(), newVariableLengths);
+		} else {
+			return new ArrayStatement(newTestCase, retval.getType(), lengths);
+		}
 	}
 
 	/** {@inheritDoc} */
@@ -207,9 +229,19 @@ public class ArrayStatement extends AbstractStatement {
 		// Add array variable to pool
 		try {
 			Class<?> componentType = retval.getComponentClass();
-			while (componentType.isArray())
+			while (componentType.isArray()) {
 				componentType = componentType.getComponentType();
-			retval.setObject(scope, Array.newInstance(componentType, lengths));
+			}
+			if(hasVariableLengths()) {
+				int[] intLengths = new int[variableLengths.size()];
+				for(int i = 0; i < variableLengths.size(); i++) {
+					intLengths[i] = (int)variableLengths.get(i).getObject(scope);
+				}
+				retval.setObject(scope, Array.newInstance(componentType, intLengths));
+			} else {
+				retval.setObject(scope, Array.newInstance(componentType, lengths));
+			}
+
 
 		} catch (CodeUnderTestException e) {
 			exceptionThrown = e.getCause();
@@ -236,6 +268,14 @@ public class ArrayStatement extends AbstractStatement {
 		return Arrays.asList(ArrayUtils.toObject(lengths));
 	}
 
+	public List<VariableReference> getVariableLengths() {
+		return this.variableLengths;
+	}
+
+	public boolean hasVariableLengths() {
+		return this.variableLengths != null;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -253,6 +293,9 @@ public class ArrayStatement extends AbstractStatement {
 	public Set<VariableReference> getVariableReferences() {
 		Set<VariableReference> references = new LinkedHashSet<VariableReference>();
 		references.add(retval);
+		if(hasVariableLengths()) {
+			references.addAll(variableLengths);
+		}
 		return references;
 	}
 
@@ -290,7 +333,7 @@ public class ArrayStatement extends AbstractStatement {
 				}
 			}
 		}
-		if (maxAssignment > lengths[0]) {
+		if (!hasVariableLengths() && maxAssignment > lengths[0]) {
 			logger.warn("Max assignment = "+maxAssignment+", length = "+lengths[0]);
 			return false;
 		}
@@ -396,6 +439,10 @@ public class ArrayStatement extends AbstractStatement {
 		((ArrayReference) retval).setLengths(lengths);
 	}
 
+	public void setLengths(VariableReference[] lengths) {
+		this.variableLengths = Arrays.asList(lengths);
+		((ArrayReference) retval).setLengths(lengths);
+	}
 	/**
 	 * <p>
 	 * setSize

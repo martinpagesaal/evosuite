@@ -23,10 +23,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.evosuite.runtime.testdata.EvoSuiteFile;
 import org.evosuite.testcase.variable.ArrayIndex;
@@ -52,6 +49,7 @@ import org.evosuite.testcase.statements.MethodStatement;
 import org.evosuite.testcase.statements.NullStatement;
 import org.evosuite.testcase.statements.numeric.ShortPrimitiveStatement;
 import org.evosuite.testcase.statements.StringPrimitiveStatement;
+import org.evosuite.utils.LoggingUtils;
 import org.evosuite.utils.generic.GenericConstructor;
 import org.evosuite.utils.generic.GenericField;
 import org.evosuite.utils.generic.GenericMethod;
@@ -74,8 +72,7 @@ public class TestCaseBuilder {
 	}
 
 	public VariableReference appendIntPrimitive(int intValue) {
-		IntPrimitiveStatement primitiveStmt = new IntPrimitiveStatement(tc,
-				intValue);
+		IntPrimitiveStatement primitiveStmt = new IntPrimitiveStatement(tc, intValue);
 		tc.addStatement(primitiveStmt);
 		return primitiveStmt.getReturnValue();
 	}
@@ -137,14 +134,11 @@ public class TestCaseBuilder {
 		FieldReference fieldReference;
 
 		if (receiver == null) {
-			fieldReference = new FieldReference(tc, new GenericField(field,
-					field.getDeclaringClass()));
+			fieldReference = new FieldReference(tc, new GenericField(field, field.getDeclaringClass()));
 		} else {
-			fieldReference = new FieldReference(tc, new GenericField(field,
-					receiver.getType()), receiver);
+			fieldReference = new FieldReference(tc, new GenericField(field, receiver.getType()), receiver);
 		}
-		AssignmentStatement stmt = new AssignmentStatement(tc, fieldReference,
-				value);
+		AssignmentStatement stmt = new AssignmentStatement(tc, fieldReference, value);
 		tc.addStatement(stmt);
 	}
 
@@ -178,8 +172,7 @@ public class TestCaseBuilder {
 	}
 
 	public VariableReference appendEnumPrimitive(Enum<?> value) {
-		EnumPrimitiveStatement primitiveStmt = new EnumPrimitiveStatement(tc,
-				value);
+		EnumPrimitiveStatement primitiveStmt = new EnumPrimitiveStatement(tc, value);
 		tc.addStatement(primitiveStmt);
 		return primitiveStmt.getReturnValue();
 	}
@@ -190,6 +183,18 @@ public class TestCaseBuilder {
 		return (ArrayReference) arrayStmt.getReturnValue();
 	}
 
+	public ArrayList<VariableReference> appendExtendedArrayStmt(Type type, int length) {
+
+		VariableReference lengthCreation = this.appendIntPrimitive(length);
+
+		ArrayStatement arrayStmt = new ArrayStatement(tc, type, lengthCreation);
+		tc.addStatement(arrayStmt);
+
+		ArrayList<VariableReference> arguments = new ArrayList<>();
+		VariableReference arrayCreation = arrayStmt.getReturnValue();
+		arguments.add(arrayCreation);
+		return arguments;
+	}
 	/**
 	 * array[index] := var
 	 * 
@@ -271,27 +276,21 @@ public class TestCaseBuilder {
 	 * @param array
 	 * @param index
 	 */
-	public void appendAssignment(VariableReference receiver, Field field,
-			VariableReference src, Field fieldSrc) {
+	public void appendAssignment(VariableReference receiver, Field field, VariableReference src, Field fieldSrc) {
 		FieldReference dstFieldReference;
 		if (receiver == null) {
-			dstFieldReference = new FieldReference(tc, new GenericField(field,
-					field.getDeclaringClass()));
+			dstFieldReference = new FieldReference(tc, new GenericField(field, field.getDeclaringClass()));
 		} else {
-			dstFieldReference = new FieldReference(tc, new GenericField(field,
-					receiver.getType()), receiver);
+			dstFieldReference = new FieldReference(tc, new GenericField(field, receiver.getType()), receiver);
 		}
 		
 		FieldReference srcFieldReference;
 		if (src == null) {
-			srcFieldReference = new FieldReference(tc, new GenericField(fieldSrc,
-					fieldSrc.getDeclaringClass()));
+			srcFieldReference = new FieldReference(tc, new GenericField(fieldSrc, fieldSrc.getDeclaringClass()));
 		} else {
-			srcFieldReference = new FieldReference(tc, new GenericField(fieldSrc,
-					src.getType()), src);
+			srcFieldReference = new FieldReference(tc, new GenericField(fieldSrc, src.getType()), src);
 		}
-		AssignmentStatement stmt = new AssignmentStatement(tc, dstFieldReference,
-				srcFieldReference);
+		AssignmentStatement stmt = new AssignmentStatement(tc, dstFieldReference, srcFieldReference);
 		tc.addStatement(stmt);
 	}
 

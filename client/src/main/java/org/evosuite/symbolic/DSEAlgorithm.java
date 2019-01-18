@@ -400,8 +400,10 @@ public class DSEAlgorithm extends GeneticAlgorithm<TestSuiteChromosome> {
           break;
         }
         case Type.ARRAY: {
-          VariableReference arrayVariable = testCaseBuilder.appendArrayStmt(argumentClass, 0);
-          arguments.add(arrayVariable);
+          ArrayList<VariableReference> arrayArguments = testCaseBuilder.appendExtendedArrayStmt(argumentClass, 0);
+          arguments.addAll(arrayArguments);
+//            VariableReference arrayVariable = testCaseBuilder.appendArrayStmt(argumentClass, 0);
+//            arguments.add(arrayVariable);
           break;
         }
         case Type.OBJECT: {
@@ -420,8 +422,7 @@ public class DSEAlgorithm extends GeneticAlgorithm<TestSuiteChromosome> {
       }
     }
 
-    testCaseBuilder.appendMethod(null, targetStaticMethod,
-        arguments.toArray(new VariableReference[] {}));
+    testCaseBuilder.appendMethod(null, targetStaticMethod, arguments.toArray(new VariableReference[] {}));
     DefaultTestCase testCase = testCaseBuilder.getDefaultTestCase();
 
     return testCase;

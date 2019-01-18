@@ -55,6 +55,7 @@ public class DSEBasicTypesSystemTest extends SystemTestBase  {
         Properties.LOG_LEVEL = "info";
         LoggingUtils.changeLogbackFile(LoggingUtils.getLogbackFileName());
         Properties.SEARCH_BUDGET = 50000;
+        Properties.CONCOLIC_TIMEOUT = Integer.MAX_VALUE;
         Properties.RESET_STATIC_FIELD_GETS = true;
 
         String cvc4_path = System.getenv("cvc4_path");
@@ -63,12 +64,12 @@ public class DSEBasicTypesSystemTest extends SystemTestBase  {
         }
 
         Properties.DSE_SOLVER = Properties.SolverType.CVC4_SOLVER;
-        Properties.DSE_CONSTRAINT_SOLVER_TIMEOUT_MILLIS = 3000;
+        Properties.DSE_CONSTRAINT_SOLVER_TIMEOUT_MILLIS = 60 * 3000;
 
         Properties.STOPPING_CONDITION = Properties.StoppingCondition.MAXTESTS;
         Properties.SEARCH_BUDGET = 300; // tests
-        Properties.MINIMIZATION_TIMEOUT = 60 * 60;
-        Properties.ASSERTION_TIMEOUT = 60 * 60;
+        Properties.MINIMIZATION_TIMEOUT = 60 * 60 * 60;
+        Properties.ASSERTION_TIMEOUT = 60 * 60 * 60;
 
         Properties.STRATEGY = Properties.Strategy.DSE;
 

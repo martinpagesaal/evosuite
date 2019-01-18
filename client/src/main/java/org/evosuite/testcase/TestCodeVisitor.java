@@ -28,13 +28,7 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.net.URLClassLoader;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import dk.brics.automaton.RegExp;
 import org.apache.commons.lang3.CharUtils;
@@ -1760,7 +1754,18 @@ public class TestCodeVisitor extends TestVisitor {
 	@Override
 	public void visitArrayStatement(ArrayStatement statement) {
 		VariableReference retval = statement.getReturnValue();
-		List<Integer> lengths = statement.getLengths();
+		List<String> lengths = new ArrayList<>();
+		if(statement.hasVariableLengths()) {
+			List<VariableReference> variableLengths = statement.getVariableLengths();
+			for(VariableReference vLength : variableLengths) {
+				lengths.add(getVariableName(vLength));
+			}
+ 		} else {
+			List<Integer> intLengths = statement.getLengths();
+			for(Integer iLength : intLengths) {
+				lengths.add(iLength.toString());
+			}
+		}
 
 		String type = getClassName(retval);
 		String multiDimensions = "";
@@ -1773,8 +1778,8 @@ public class TestCodeVisitor extends TestVisitor {
 			}
 		} else {
 			type = type.replaceAll("\\[\\]", "");
-			for (int length : lengths) {
-				multiDimensions += "[" + length + "]";
+			for (int i = 0; i < lengths.size(); i++) {
+				multiDimensions += "[" + lengths.get(i) + "]";
 			}
 		}
 
