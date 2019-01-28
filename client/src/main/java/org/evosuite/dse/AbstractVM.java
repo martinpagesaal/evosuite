@@ -789,7 +789,7 @@ public abstract class AbstractVM implements IVM {
 	}
 
 	@Override
-	public void NEWARRAY(int length, Class<?> componentType) { /* stub */
+	public void NEWARRAY(int length, Class<?> componentType, Object conc_array, String varRef_name) { /* stub */
 	}
 
 	@Override

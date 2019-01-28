@@ -129,20 +129,20 @@ public final class CVC4Solver extends SmtSolver {
 			throw new SolverEmptyQueryException("No variables found during constraint solving.");
 		}
 
-		LoggingUtils.getEvoLogger().debug("CVC4 Query:");
-		LoggingUtils.getEvoLogger().debug(smtQueryStr);
+//		LoggingUtils.getEvoLogger().debug("CVC4 Query:");
+//		LoggingUtils.getEvoLogger().debug(smtQueryStr);
 
 		String cmd = buildCVC4cmd(cvcTimeout);
 
-		LoggingUtils.getEvoLogger().debug("CVC4 Command:");
-		LoggingUtils.getEvoLogger().debug(cmd);
+//		LoggingUtils.getEvoLogger().debug("CVC4 Command:");
+//		LoggingUtils.getEvoLogger().debug(cmd);
 
 		ByteArrayOutputStream stdout = new ByteArrayOutputStream();
 
 		try {
 			launchNewSolvingProcess(cmd, smtQueryStr, (int) cvcTimeout, stdout);
 			String output = stdout.toString("UTF-8");
-			LoggingUtils.getEvoLogger().info("Solver Result Str: [" + output + "]");
+//			LoggingUtils.getEvoLogger().info("Solver Result Str: [" + output + "]");
 			if (output.startsWith("unknown")) {
 				LoggingUtils.getEvoLogger().debug("timeout reached when using cvc4");
 				throw new SolverTimeoutException();
