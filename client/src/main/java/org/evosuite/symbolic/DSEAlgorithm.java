@@ -84,7 +84,7 @@ public class DSEAlgorithm extends GeneticAlgorithm<TestSuiteChromosome> {
 
       for (int i = pathCondition.size() - 1; i >= 0; i--) {
 
-        LoggingUtils.getEvoLogger().info("negating index " + i + " of path condition");
+//        LoggingUtils.getEvoLogger().info("negating index " + i + " of path condition");
 
         List<Constraint<?>> query = DSETestGenerator.buildQuery(pathCondition, i);
 
@@ -128,7 +128,7 @@ public class DSEAlgorithm extends GeneticAlgorithm<TestSuiteChromosome> {
     List<TestCase> generatedTests = new ArrayList<TestCase>();
     generatedTests.add(testCaseWithDefaultValues);
 
-    LoggingUtils.getEvoLogger().info("Created new default test case with default values:" + testCaseWithDefaultValues.toCode());
+    LoggingUtils.getEvoLogger().info("\n\n\nCreated new default test case with default values:\n" + testCaseWithDefaultValues.toCode());
 
     calculateFitnessAndSortPopulation();
     return generatedTests;
@@ -172,16 +172,17 @@ public class DSEAlgorithm extends GeneticAlgorithm<TestSuiteChromosome> {
    */
   private PathCondition processPathCondition(TestCase currentTestCase, HashSet<Set<Constraint<?>>> pathConditions) {
 
-    LoggingUtils.getEvoLogger().info("Starting concolic execution of test case: " + currentTestCase.toCode());
+    LoggingUtils.getEvoLogger().info("\n\nStarting concolic execution of test case: \n" + currentTestCase.toCode());
 
     TestCase clonedTestCase = currentTestCase.clone();
 
     final PathCondition pathCondition = ConcolicExecution.executeConcolic((DefaultTestCase) clonedTestCase);
-    LoggingUtils.getEvoLogger().info("Path condition collected with : " + pathCondition.size() + " branches");
+    LoggingUtils.getEvoLogger().info("\nPath condition collected with : " + pathCondition.size() + " branches");
 
     Set<Constraint<?>> constraintsSet = canonicalize(pathCondition.getConstraints());
     pathConditions.add(constraintsSet);
-    LoggingUtils.getEvoLogger().info("Number of stored path condition: " + pathConditions.size());
+    LoggingUtils.getEvoLogger().info("Number of stored path condition: " + pathConditions.size()+"\n\n");
+
 
     return pathCondition;
   }
@@ -195,22 +196,22 @@ public class DSEAlgorithm extends GeneticAlgorithm<TestSuiteChromosome> {
    */
   private boolean checkSkippingIterationCondition(Set<Constraint<?>> constraintSet, HashSet<Set<Constraint<?>>> pathConditions) {
     if (queryCache.containsKey(constraintSet)) {
-      LoggingUtils.getEvoLogger().info("skipping solving of current query since it is in the query cache");
+//      LoggingUtils.getEvoLogger().info("skipping solving of current query since it is in the query cache");
       return true;
     }
 
     if (isSubSetOf(constraintSet, queryCache.keySet())) {
-      LoggingUtils.getEvoLogger().info("skipping solving of current query because it is satisfiable and solved by previous path condition");
+//      LoggingUtils.getEvoLogger().info("skipping solving of current query because it is satisfiable and solved by previous path condition");
       return true;
     }
 
     if (pathConditions.contains(constraintSet)) {
-      LoggingUtils.getEvoLogger().info("skipping solving of current query because of existing path condition");
+//      LoggingUtils.getEvoLogger().info("skipping solving of current query because of existing path condition");
       return true;
     }
 
     if (isSubSetOf(constraintSet, pathConditions)) {
-      LoggingUtils.getEvoLogger().info("skipping solving of current query because it is satisfiable and solved by previous path condition");
+//      LoggingUtils.getEvoLogger().info("skipping solving of current query because it is satisfiable and solved by previous path condition");
       return true;
     }
 
@@ -225,7 +226,7 @@ public class DSEAlgorithm extends GeneticAlgorithm<TestSuiteChromosome> {
    *
    */
   private SolverResult processQuery(List<Constraint<?>> query, Set<Constraint<?>> constraintSet) {
-    LoggingUtils.getEvoLogger().info("Solving query with  " + query.size() + " constraints");
+//    LoggingUtils.getEvoLogger().info("Solving query with  " + query.size() + " constraints");
 
     List<Constraint<?>> varBounds = createVarBounds(query);
     query.addAll(varBounds);
@@ -233,7 +234,7 @@ public class DSEAlgorithm extends GeneticAlgorithm<TestSuiteChromosome> {
     SolverResult result = DSETestGenerator.solve(query);
 
     queryCache.put(constraintSet, result);
-    LoggingUtils.getEvoLogger().info("Number of stored entries in query cache : " + queryCache.keySet().size());
+//    LoggingUtils.getEvoLogger().info("Number of stored entries in query cache : " + queryCache.keySet().size());
 
     return result;
   }
@@ -248,36 +249,36 @@ public class DSEAlgorithm extends GeneticAlgorithm<TestSuiteChromosome> {
    */
   private void processResult(SolverResult result, TestCase currentTestCase, List<TestCase> generatedTests) {
     if (result == null) {
-      LoggingUtils.getEvoLogger().info("Solver outcome is null (probably failure/unknown/timeout)");
+//      LoggingUtils.getEvoLogger().info("Solver outcome is null (probably failure/unknown/timeout)");
     } else if (result.isSAT()) {
-      LoggingUtils.getEvoLogger().info("query is SAT (solution found)");
+//      LoggingUtils.getEvoLogger().info("query is SAT (solution found)");
       Map<String, Object> solution = result.getModel();
-      LoggingUtils.getEvoLogger().info("solver found solution " + solution.toString());
+//      LoggingUtils.getEvoLogger().info("solver found solution " + solution.toString());
 
       TestCase newTest = DSETestGenerator.updateTest(currentTestCase, solution);
-      LoggingUtils.getEvoLogger().info("Created new test case from SAT solution:" + newTest.toCode());
+//      LoggingUtils.getEvoLogger().info("Created new test case from SAT solution:" + newTest.toCode());
       generatedTests.add(newTest);
 
       double fitnessBeforeAddingNewTest = this.getBestIndividual().getFitness();
-      LoggingUtils.getEvoLogger().info("Fitness before adding new test" + fitnessBeforeAddingNewTest);
+//      LoggingUtils.getEvoLogger().info("Fitness before adding new test" + fitnessBeforeAddingNewTest);
 
       getBestIndividual().addTest(newTest);
 
       calculateFitness(getBestIndividual());
 
       double fitnessAfterAddingNewTest = this.getBestIndividual().getFitness();
-      LoggingUtils.getEvoLogger().info("Fitness after adding new test " + fitnessAfterAddingNewTest);
+//      LoggingUtils.getEvoLogger().info("Fitness after adding new test " + fitnessAfterAddingNewTest);
 
       this.notifyIteration();
 
       if (fitnessAfterAddingNewTest == 0) {
-        LoggingUtils.getEvoLogger().info("No more DSE test generation since fitness is 0");
+//        LoggingUtils.getEvoLogger().info("No more DSE test generation since fitness is 0");
         return;
       }
 
     } else {
       assert (result.isUNSAT());
-      LoggingUtils.getEvoLogger().info("query is UNSAT (no solution found)");
+//      LoggingUtils.getEvoLogger().info("query is UNSAT (no solution found)");
     }
   }
 

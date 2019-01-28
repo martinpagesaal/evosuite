@@ -578,7 +578,7 @@ public interface IVM {
 
 	public void NEW(String typeName);
 
-	public void NEWARRAY(int length, Class<?> componentType);
+	public void NEWARRAY(int length, Class<?> componentType, Object conc_array, String varRef_name);
 
 	public void ANEWARRAY(int length, String typeName);
 

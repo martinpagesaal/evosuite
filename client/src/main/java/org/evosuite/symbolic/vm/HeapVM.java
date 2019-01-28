@@ -31,6 +31,7 @@ import org.evosuite.symbolic.expr.bv.IntegerValue;
 import org.evosuite.symbolic.expr.fp.RealValue;
 import org.evosuite.symbolic.expr.ref.ReferenceConstant;
 import org.evosuite.symbolic.expr.ref.ReferenceExpression;
+import org.evosuite.symbolic.expr.ref.ReferenceVariable;
 import org.evosuite.symbolic.instrument.ConcolicInstrumentingClassLoader;
 import org.objectweb.asm.Type;
 import org.slf4j.Logger;
@@ -490,7 +491,7 @@ public final class HeapVM extends AbstractVM {
 	 * doc10.html#newarray
 	 */
 	@Override
-	public void NEWARRAY(int conc_array_length, Class<?> componentType) {
+	public void NEWARRAY(int conc_array_length, Class<?> componentType, Object conc_array, String varRef_name) {
 		/**
 		 * Since this callback is invoked before the actual array creation, we
 		 * can only add negative index constraints.
@@ -503,19 +504,18 @@ public final class HeapVM extends AbstractVM {
 		IntegerValue symb_array_length = env.topFrame().operandStack.popBv32();
 
 		/* negative index */
-		if (negativeArrayLengthViolation(conc_array_length, symb_array_length))
+		if (negativeArrayLengthViolation(conc_array_length, symb_array_length)) {
 			return;
+		}
 
 		// create array class
 		int[] lenghts = new int[] { 0 };
-		Class<?> array_class = Array.newInstance(componentType, lenghts)
-				.getClass();
+		Class<?> array_class = Array.newInstance(componentType, lenghts).getClass();
 
 		Type arrayType = Type.getType(array_class);
-		ReferenceConstant symb_array_ref = this.env.heap.buildNewReferenceConstant(arrayType);
+		ReferenceVariable symb_array_ref = this.env.heap.buildNewReferenceVariable(conc_array, varRef_name);
 
-		env.heap.putField("", ARRAY_LENGTH, null, symb_array_ref,
-				symb_array_length);
+		env.heap.putField("", ARRAY_LENGTH, null, symb_array_ref, symb_array_length);
 
 		env.topFrame().operandStack.pushRef(symb_array_ref);
 	}

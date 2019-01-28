@@ -32,6 +32,7 @@ import org.evosuite.runtime.testdata.EvoSuiteLocalAddress;
 import org.evosuite.runtime.testdata.EvoSuiteRemoteAddress;
 import org.evosuite.runtime.testdata.EvoSuiteURL;
 import org.evosuite.symbolic.expr.Expression;
+import org.evosuite.symbolic.expr.arr.ArrayVariable;
 import org.evosuite.symbolic.expr.bv.IntegerConstant;
 import org.evosuite.symbolic.expr.bv.IntegerValue;
 import org.evosuite.symbolic.expr.bv.IntegerVariable;
@@ -41,6 +42,7 @@ import org.evosuite.symbolic.expr.fp.RealValue;
 import org.evosuite.symbolic.expr.fp.RealVariable;
 import org.evosuite.symbolic.expr.ref.ReferenceConstant;
 import org.evosuite.symbolic.expr.ref.ReferenceExpression;
+import org.evosuite.symbolic.expr.ref.ReferenceVariable;
 import org.evosuite.symbolic.expr.str.StringValue;
 import org.evosuite.symbolic.expr.str.StringVariable;
 import org.evosuite.symbolic.vm.ExpressionFactory;
@@ -239,6 +241,7 @@ public class SymbolicObserver extends ExecutionObserver {
 			ArrayReference arrayRef = (ArrayReference) s.getReturnValue();
 			Object conc_array;
 			conc_array = arrayRef.getObject(scope);
+			String varRef_name = arrayRef.getName();
 
 			if (arrayRef.getArrayDimensions() == 1) {
 				int length = arrayRef.getArrayLength();
@@ -246,21 +249,21 @@ public class SymbolicObserver extends ExecutionObserver {
 				Class<?> component_class = arrayRef.getComponentClass();
 				env.topFrame().operandStack.pushBv32(lengthExpr);
 				if (component_class.equals(int.class)) {
-					VM.NEWARRAY(length, COMPONENT_TYPE_INT);
+					VM.NEWARRAY(length, COMPONENT_TYPE_INT, conc_array, varRef_name);
 				} else if (component_class.equals(char.class)) {
-					VM.NEWARRAY(length, COMPONENT_TYPE_CHAR);
+					VM.NEWARRAY(length, COMPONENT_TYPE_CHAR, conc_array, varRef_name);
 				} else if (component_class.equals(short.class)) {
-					VM.NEWARRAY(length, COMPONENT_TYPE_SHORT);
+					VM.NEWARRAY(length, COMPONENT_TYPE_SHORT, conc_array, varRef_name);
 				} else if (component_class.equals(byte.class)) {
-					VM.NEWARRAY(length, COMPONENT_TYPE_BYTE);
+					VM.NEWARRAY(length, COMPONENT_TYPE_BYTE, conc_array, varRef_name);
 				} else if (component_class.equals(float.class)) {
-					VM.NEWARRAY(length, COMPONENT_TYPE_FLOAT);
+					VM.NEWARRAY(length, COMPONENT_TYPE_FLOAT, conc_array, varRef_name);
 				} else if (component_class.equals(long.class)) {
-					VM.NEWARRAY(length, COMPONENT_TYPE_LONG);
+					VM.NEWARRAY(length, COMPONENT_TYPE_LONG, conc_array, varRef_name);
 				} else if (component_class.equals(boolean.class)) {
-					VM.NEWARRAY(length, COMPONENT_TYPE_BOOLEAN);
+					VM.NEWARRAY(length, COMPONENT_TYPE_BOOLEAN, conc_array, varRef_name);
 				} else if (component_class.equals(double.class)) {
-					VM.NEWARRAY(length, COMPONENT_TYPE_DOUBLE);
+					VM.NEWARRAY(length, COMPONENT_TYPE_DOUBLE, conc_array, varRef_name);
 				} else {
 					// push arguments
 					String componentTypeName = component_class.getName().replace('.', '/');
@@ -278,10 +281,16 @@ public class SymbolicObserver extends ExecutionObserver {
 				VM.MULTIANEWARRAY(arrayTypeDesc, arrayRef.getArrayDimensions());
 
 			}
-			ReferenceConstant symb_array = (ReferenceConstant) env.topFrame().operandStack.popRef();
+			ReferenceVariable symb_array = (ReferenceVariable) env.topFrame().operandStack.popRef();
 			env.heap.initializeReference(conc_array, symb_array);
 
-			String varRef_name = arrayRef.getName();
+//			ArrayVariable arrayVariable = buildArrayVariable(varRef_name, new int[]{0,0});
+//			IntegerVariable integerVariable = buildIntegerVariable(varRef_name, s.getReturnValue(), Integer.MIN_VALUE, Integer.MAX_VALUE);
+//			symb_expressions.put(varRef_name, arrayVariable);
+
+			StringVariable stringVariable = buildStringVariable(varRef_name, conc_array.toString());
+			symb_expressions.put(varRef_name, stringVariable);
+
 			symb_references.put(varRef_name, symb_array);
 
 		} catch (CodeUnderTestException e) {
@@ -1885,6 +1894,7 @@ public class SymbolicObserver extends ExecutionObserver {
 	private final Map<String, IntegerVariable> integerVariables = new HashMap<String, IntegerVariable>();
 	private final Map<String, RealVariable> realVariables = new HashMap<String, RealVariable>();
 	private final Map<String, StringVariable> stringVariables = new HashMap<String, StringVariable>();
+	private final Map<String, ArrayVariable> arrayVariables = new HashMap<String, ArrayVariable>();
 
 	private void after(IntPrimitiveStatement statement, Scope scope) {
 		int valueOf = statement.getValue();
@@ -1958,6 +1968,19 @@ public class SymbolicObserver extends ExecutionObserver {
 		}
 		return stringVariable;
 	}
+
+	private <T> ArrayVariable<T> buildArrayVariable(String name, T[] arrVal) {
+		ArrayVariable<T> arrayVariable;
+		if (arrayVariables.containsKey(name)) {
+			arrayVariable = arrayVariables.get(name);
+//			arrayVariable.setConcreteValue(arrVal);
+		} else {
+			arrayVariable = new ArrayVariable<T>(name, arrVal);
+			arrayVariables.put(name, arrayVariable);
+		}
+		return arrayVariable;
+	}
+
 
 	@Override
 	public void testExecutionFinished(ExecutionResult r, Scope s) {

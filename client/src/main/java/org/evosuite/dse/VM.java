@@ -3536,15 +3536,16 @@ public final class VM {
 		}
 	}
 
-	public static void NEWARRAY(int length, int componentTypeInt) {
+	public static void NEWARRAY(int length, int componentTypeInt, Object conc_array, String varRef_name) {
 		if (ignoreCallback)
 			return;
 		ignoreCallback = true;
 		vm.countCallback();
 		try {
-			for (IVM listener : vm.listeners)
-				listener.NEWARRAY(length,
-						getArrayComponentType(componentTypeInt));
+			Class<?> arrType = getArrayComponentType(componentTypeInt);
+			for (IVM listener : vm.listeners) {
+				listener.NEWARRAY(length, arrType, conc_array, varRef_name);
+			}
 		} catch (Throwable t) {
 			handleException(t);
 		}
