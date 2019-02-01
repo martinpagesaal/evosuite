@@ -114,7 +114,11 @@ public class ArrayReference extends VariableReferenceImpl {
 	}
 
 	public VariableReference getVariableLength() {
-		return variableLengths.get(0);
+		return this.variableLengths.get(0);
+	}
+
+	public boolean hasVariableLengths() {
+		return this.variableLengths != null;
 	}
 
 	/**

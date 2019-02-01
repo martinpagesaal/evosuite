@@ -245,11 +245,14 @@ public class SymbolicObserver extends ExecutionObserver {
 			if (arrayRef.getArrayDimensions() == 1) {
 
 				int length = arrayRef.getArrayLength();
-//				IntegerConstant lengthExpr = ExpressionFactory.buildNewIntegerConstant(length);
 				Class<?> component_class = arrayRef.getComponentClass();
 
-				IntegerValue lengthValue = (IntegerValue) this.read(arrayRef.getVariableLength(), scope).getExpression();
-
+				IntegerValue lengthValue;
+				if(arrayRef.hasVariableLengths()) {
+					lengthValue = (IntegerValue) this.read(arrayRef.getVariableLength(), scope).getExpression();
+				} else {
+					lengthValue = ExpressionFactory.buildNewIntegerConstant(length);
+				}
 				env.topFrame().operandStack.pushBv32(lengthValue);
 				if (component_class.equals(int.class)) {
 					VM.NEWARRAY(length, COMPONENT_TYPE_INT);
