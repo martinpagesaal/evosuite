@@ -129,22 +129,22 @@ public final class CVC4Solver extends SmtSolver {
 			throw new SolverEmptyQueryException("No variables found during constraint solving.");
 		}
 
-		LoggingUtils.getEvoLogger().debug("CVC4 Query:");
-		LoggingUtils.getEvoLogger().debug(smtQueryStr);
+//		LoggingUtils.getEvoLogger().debug("CVC4 Query:");
+//		LoggingUtils.getEvoLogger().debug(smtQueryStr);
 
 		String cmd = buildCVC4cmd(cvcTimeout);
 
-		LoggingUtils.getEvoLogger().debug("CVC4 Command:");
-		LoggingUtils.getEvoLogger().debug(cmd);
+//		LoggingUtils.getEvoLogger().debug("CVC4 Command:");
+//		LoggingUtils.getEvoLogger().debug(cmd);
 
 		ByteArrayOutputStream stdout = new ByteArrayOutputStream();
 
 		try {
 			launchNewSolvingProcess(cmd, smtQueryStr, (int) cvcTimeout, stdout);
 			String output = stdout.toString("UTF-8");
-			LoggingUtils.getEvoLogger().info("Solver Result Str: [" + output + "]");
+//			LoggingUtils.getEvoLogger().info("Solver Result Str: [" + output + "]");
 			if (output.startsWith("unknown")) {
-				LoggingUtils.getEvoLogger().debug("timeout reached when using cvc4");
+//				LoggingUtils.getEvoLogger().debug("timeout reached when using cvc4");
 				throw new SolverTimeoutException();
 			}
 
@@ -157,7 +157,7 @@ public final class CVC4Solver extends SmtSolver {
 
 			if (output.contains("error")) {
 				String errMsg = "An error occurred while executing CVC4!";
-				LoggingUtils.getEvoLogger().error(errMsg);
+//				LoggingUtils.getEvoLogger().error(errMsg);
 				throw new SolverErrorException(errMsg);
 			}
 
@@ -175,7 +175,7 @@ public final class CVC4Solver extends SmtSolver {
 				// check if the found solution is useful
 				boolean check = checkSAT(constraints, solverResult);
 				if (!check) {
-					LoggingUtils.getEvoLogger().debug("CVC4 solution does not solve the original constraint system. ");
+//					LoggingUtils.getEvoLogger().debug("CVC4 solution does not solve the original constraint system. ");
 					SolverResult unsatResult = SolverResult.newUNSAT();
 					return unsatResult;
 				}

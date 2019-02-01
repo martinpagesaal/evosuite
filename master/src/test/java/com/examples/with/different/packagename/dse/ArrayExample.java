@@ -67,7 +67,7 @@ public class ArrayExample {
         }
     }
 
-    public boolean largoInt(int c) {
+    public static boolean largoInt(int c) {
         char[] arr = new char[c];
         if(arr.length == 0) {
             return true;
