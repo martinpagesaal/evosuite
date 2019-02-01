@@ -53,7 +53,7 @@ public class ArrayExample {
 //        return res;
 //    }
 //
-    public  int largoArr(int[] array) {
+    public static int largoArr(int[] array) {
         if(array == null) {
             return 0;
         } else if(array.length == 1) {
@@ -67,7 +67,7 @@ public class ArrayExample {
         }
     }
 
-    public static boolean largoInt(int c) {
+    public boolean largoInt(int c) {
         char[] arr = new char[c];
         if(arr.length == 0) {
             return true;

@@ -113,6 +113,10 @@ public class ArrayReference extends VariableReferenceImpl {
 		return lengths[0];
 	}
 
+	public VariableReference getVariableLength() {
+		return variableLengths.get(0);
+	}
+
 	/**
 	 * <p>
 	 * setArrayLength

@@ -41,9 +41,11 @@ import org.evosuite.symbolic.expr.fp.RealValue;
 import org.evosuite.symbolic.expr.fp.RealVariable;
 import org.evosuite.symbolic.expr.ref.ReferenceConstant;
 import org.evosuite.symbolic.expr.ref.ReferenceExpression;
+import org.evosuite.symbolic.expr.ref.ReferenceVariable;
 import org.evosuite.symbolic.expr.str.StringValue;
 import org.evosuite.symbolic.expr.str.StringVariable;
 import org.evosuite.symbolic.vm.ExpressionFactory;
+import org.evosuite.symbolic.vm.HeapVM;
 import org.evosuite.symbolic.vm.SymbolicEnvironment;
 import org.evosuite.symbolic.vm.SymbolicHeap;
 import org.evosuite.symbolic.vm.wrappers.Types;
@@ -241,10 +243,14 @@ public class SymbolicObserver extends ExecutionObserver {
 			conc_array = arrayRef.getObject(scope);
 
 			if (arrayRef.getArrayDimensions() == 1) {
+
 				int length = arrayRef.getArrayLength();
-				IntegerConstant lengthExpr = ExpressionFactory.buildNewIntegerConstant(length);
+//				IntegerConstant lengthExpr = ExpressionFactory.buildNewIntegerConstant(length);
 				Class<?> component_class = arrayRef.getComponentClass();
-				env.topFrame().operandStack.pushBv32(lengthExpr);
+
+				IntegerValue lengthValue = (IntegerValue) this.read(arrayRef.getVariableLength(), scope).getExpression();
+
+				env.topFrame().operandStack.pushBv32(lengthValue);
 				if (component_class.equals(int.class)) {
 					VM.NEWARRAY(length, COMPONENT_TYPE_INT);
 				} else if (component_class.equals(char.class)) {
@@ -278,10 +284,11 @@ public class SymbolicObserver extends ExecutionObserver {
 				VM.MULTIANEWARRAY(arrayTypeDesc, arrayRef.getArrayDimensions());
 
 			}
-			ReferenceConstant symb_array = (ReferenceConstant) env.topFrame().operandStack.popRef();
-			env.heap.initializeReference(conc_array, symb_array);
 
 			String varRef_name = arrayRef.getName();
+
+			ReferenceConstant symb_array = (ReferenceConstant) env.topFrame().operandStack.popRef();
+
 			symb_references.put(varRef_name, symb_array);
 
 		} catch (CodeUnderTestException e) {
@@ -732,6 +739,10 @@ public class SymbolicObserver extends ExecutionObserver {
 	}
 
 	private void before(DoublePrimitiveStatement statement, Scope scope) {
+		/* do nothing */
+	}
+
+	private void before(ArrayStatement s, Scope scope) {
 		/* do nothing */
 	}
 
@@ -1430,10 +1441,6 @@ public class SymbolicObserver extends ExecutionObserver {
 		String varName = varRef.getName();
 		ReferenceExpression symb_ref = env.heap.getReference(concrete_reference);
 		symb_references.put(varName, symb_ref);
-	}
-
-	private void before(ArrayStatement s, Scope scope) {
-		/* do nothing */
 	}
 
 	private void after(EnumPrimitiveStatement<?> s, Scope scope) {

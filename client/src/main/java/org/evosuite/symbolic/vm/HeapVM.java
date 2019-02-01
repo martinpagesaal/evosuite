@@ -48,7 +48,7 @@ public final class HeapVM extends AbstractVM {
 
 	private static Logger logger = LoggerFactory.getLogger(HeapVM.class);
 
-	private static final String ARRAY_LENGTH = "length";
+	public static final String ARRAY_LENGTH = "length";
 
 	private final SymbolicEnvironment env;
 
@@ -508,14 +508,12 @@ public final class HeapVM extends AbstractVM {
 
 		// create array class
 		int[] lenghts = new int[] { 0 };
-		Class<?> array_class = Array.newInstance(componentType, lenghts)
-				.getClass();
+		Class<?> array_class = Array.newInstance(componentType, lenghts).getClass();
 
 		Type arrayType = Type.getType(array_class);
 		ReferenceConstant symb_array_ref = this.env.heap.buildNewReferenceConstant(arrayType);
 
-		env.heap.putField("", ARRAY_LENGTH, null, symb_array_ref,
-				symb_array_length);
+		env.heap.putField("", ARRAY_LENGTH, null, symb_array_ref, symb_array_length);
 
 		env.topFrame().operandStack.pushRef(symb_array_ref);
 	}
