@@ -187,6 +187,10 @@ public class TestCaseBuilder {
 
 		VariableReference lengthCreation = this.appendIntPrimitive(length);
 
+		for(int i = 0; i < length; i++) {
+			this.appendIntPrimitive(length);
+		}
+
 		ArrayStatement arrayStmt = new ArrayStatement(tc, type, lengthCreation);
 		tc.addStatement(arrayStmt);
 

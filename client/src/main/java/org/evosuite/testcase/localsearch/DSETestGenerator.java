@@ -364,6 +364,9 @@ public class DSETestGenerator {
 						p.setValue(value);
 					} else if (p.getValue().getClass().equals(Integer.class)) {
 						p.setValue(value.intValue());
+//						if(newTest.statements.get(1).getVariableLengths().get(0).getName().toString() == key) {
+//							// MOdify Array
+//						}
 					} else if (p.getValue().getClass().equals(Short.class)) {
 						p.setValue(value.shortValue());
 					} else if (p.getValue().getClass().equals(Boolean.class)) {

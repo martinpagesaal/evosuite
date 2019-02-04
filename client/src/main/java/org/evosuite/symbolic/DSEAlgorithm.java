@@ -119,7 +119,7 @@ public class DSEAlgorithm extends GeneticAlgorithm<TestSuiteChromosome> {
    */
   private List<TestCase> initializeDSETestCaseGeneration(Method staticEntryMethod) {
     double fitnessBeforeAddingDefaultTest = this.getBestIndividual().getFitness();
-    LoggingUtils.getEvoLogger().info("Fitness before adding default test case:" + fitnessBeforeAddingDefaultTest);
+    LoggingUtils.getEvoLogger().info("Fitness before adding default test case: " + fitnessBeforeAddingDefaultTest);
 
     TestCase testCaseWithDefaultValues = buildTestCaseWithDefaultValues(staticEntryMethod);
 
@@ -128,7 +128,7 @@ public class DSEAlgorithm extends GeneticAlgorithm<TestSuiteChromosome> {
     List<TestCase> generatedTests = new ArrayList<TestCase>();
     generatedTests.add(testCaseWithDefaultValues);
 
-    LoggingUtils.getEvoLogger().info("Created new default test case with default values:" + testCaseWithDefaultValues.toCode());
+    LoggingUtils.getEvoLogger().info("Created new default test case with default values:\n\n" + testCaseWithDefaultValues.toCode());
 
     calculateFitnessAndSortPopulation();
     return generatedTests;
@@ -172,7 +172,7 @@ public class DSEAlgorithm extends GeneticAlgorithm<TestSuiteChromosome> {
    */
   private PathCondition processPathCondition(TestCase currentTestCase, HashSet<Set<Constraint<?>>> pathConditions) {
 
-    LoggingUtils.getEvoLogger().info("Starting concolic execution of test case: " + currentTestCase.toCode());
+    LoggingUtils.getEvoLogger().info("Starting concolic execution of test case:\n\n" + currentTestCase.toCode());
 
     TestCase clonedTestCase = currentTestCase.clone();
 
