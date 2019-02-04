@@ -185,9 +185,11 @@ public class TestCaseBuilder {
 
 	public ArrayList<VariableReference> appendExtendedArrayStmt(Type type, int length) {
 
-		VariableReference lengthCreation = this.appendIntPrimitive(length);
+		IntPrimitiveStatement lengthStatement = new IntPrimitiveStatement(tc, length);
+		tc.addStatement(lengthStatement);
 
-		ArrayStatement arrayStmt = new ArrayStatement(tc, type, lengthCreation);
+		ArrayStatement arrayStmt = new ArrayStatement(tc, type, lengthStatement);
+
 		tc.addStatement(arrayStmt);
 
 		ArrayList<VariableReference> arguments = new ArrayList<>();

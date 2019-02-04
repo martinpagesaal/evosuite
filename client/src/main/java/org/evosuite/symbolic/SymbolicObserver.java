@@ -249,7 +249,7 @@ public class SymbolicObserver extends ExecutionObserver {
 
 				IntegerValue lengthValue;
 				if(arrayRef.hasVariableLengths()) {
-					lengthValue = (IntegerValue) this.read(arrayRef.getVariableLength(), scope).getExpression();
+					lengthValue = (IntegerValue) this.read(arrayRef.getVariableLength().getReturnValue(), scope).getExpression();
 				} else {
 					lengthValue = ExpressionFactory.buildNewIntegerConstant(length);
 				}

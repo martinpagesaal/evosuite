@@ -47,6 +47,7 @@ import org.evosuite.testcase.fm.MethodDescriptor;
 import org.evosuite.runtime.ViolatedAssumptionAnswer;
 import org.evosuite.testcase.statements.*;
 import org.evosuite.testcase.statements.environment.EnvironmentDataStatement;
+import org.evosuite.testcase.statements.numeric.IntPrimitiveStatement;
 import org.evosuite.testcase.variable.*;
 import org.evosuite.utils.*;
 
@@ -1756,8 +1757,9 @@ public class TestCodeVisitor extends TestVisitor {
 		VariableReference retval = statement.getReturnValue();
 		List<String> lengths = new ArrayList<>();
 		if(statement.hasVariableLengths()) {
-			List<VariableReference> variableLengths = statement.getVariableLengths();
-			for(VariableReference vLength : variableLengths) {
+			List<IntPrimitiveStatement> variableLengths = statement.getVariableLengths();
+			for(IntPrimitiveStatement lengthStatement : variableLengths) {
+				VariableReference vLength = lengthStatement.getReturnValue();
 				lengths.add(getVariableName(vLength));
 			}
  		} else {

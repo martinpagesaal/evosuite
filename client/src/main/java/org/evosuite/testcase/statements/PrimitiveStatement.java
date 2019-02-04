@@ -225,12 +225,13 @@ public abstract class PrimitiveStatement<T> extends AbstractStatement {
      */
     @Override
     public Statement copy(TestCase newTestCase, int offset) {
-        @SuppressWarnings("unchecked")
-        PrimitiveStatement<T> clone = (PrimitiveStatement<T>) getPrimitiveStatement(newTestCase,
-                retval.getGenericClass());
+
+        PrimitiveStatement<T> clone = (PrimitiveStatement<T>) getPrimitiveStatement(newTestCase, retval.getGenericClass());
         clone.setValue(value);
         // clone.assertions = copyAssertions(newTestCase, offset);
         return clone;
+
+//        return newTestCase.getStatement(getPosition() + offset);
     }
 
     /**

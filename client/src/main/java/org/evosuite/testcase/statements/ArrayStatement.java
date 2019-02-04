@@ -30,6 +30,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.evosuite.Properties;
+import org.evosuite.testcase.statements.numeric.IntPrimitiveStatement;
 import org.evosuite.testcase.variable.ArrayIndex;
 import org.evosuite.testcase.variable.ArrayReference;
 import org.evosuite.testcase.variable.FieldReference;
@@ -87,7 +88,7 @@ public class ArrayStatement extends AbstractStatement {
 	}
 
 	private int[] lengths;
-	private List<VariableReference> variableLengths;
+	private List<IntPrimitiveStatement> variableLengths;
 
 	/**
 	 * <p>
@@ -168,12 +169,12 @@ public class ArrayStatement extends AbstractStatement {
 		this(tc, new ArrayReference(tc, new GenericClass(type), length), length);
 	}
 
-	public ArrayStatement(TestCase tc, java.lang.reflect.Type type, VariableReference... length) {
+	public ArrayStatement(TestCase tc, java.lang.reflect.Type type, IntPrimitiveStatement... length) {
 		this(tc, new ArrayReference(tc, new GenericClass(type), length), length);
 
 	}
 
-	public ArrayStatement(TestCase tc, ArrayReference arrayReference, VariableReference... length) {
+	public ArrayStatement(TestCase tc, ArrayReference arrayReference, IntPrimitiveStatement... length) {
 		super(tc,arrayReference);
 		setLengths(length);
 		arrayReference.setLengths(length);
@@ -184,9 +185,10 @@ public class ArrayStatement extends AbstractStatement {
 	public Statement copy(TestCase newTestCase, int offset) {
 		if(this.hasVariableLengths()) {
 
-			VariableReference[] newVariableLengths = new VariableReference[variableLengths.size()];
+			IntPrimitiveStatement[] newVariableLengths = new IntPrimitiveStatement[variableLengths.size()];
 			for (int i = 0; i < variableLengths.size(); i++) {
-				newVariableLengths[i] = (variableLengths.get(i).copy(newTestCase, offset));
+				newVariableLengths[i] = (IntPrimitiveStatement) (variableLengths.get(i).copy(newTestCase, offset));
+				newVariableLengths[i].setRetval(variableLengths.get(i).getReturnValue().copy(newTestCase, offset));
 			}
 
 			return new ArrayStatement(newTestCase, retval.getType(), newVariableLengths);
@@ -235,7 +237,7 @@ public class ArrayStatement extends AbstractStatement {
 			if(hasVariableLengths()) {
 				int[] intLengths = new int[variableLengths.size()];
 				for(int i = 0; i < variableLengths.size(); i++) {
-					intLengths[i] = (int)variableLengths.get(i).getObject(scope);
+					intLengths[i] = (int)variableLengths.get(i).getReturnValue().getObject(scope);
 				}
 				retval.setObject(scope, Array.newInstance(componentType, intLengths));
 			} else {
@@ -268,7 +270,7 @@ public class ArrayStatement extends AbstractStatement {
 		return Arrays.asList(ArrayUtils.toObject(lengths));
 	}
 
-	public List<VariableReference> getVariableLengths() {
+	public List<IntPrimitiveStatement> getVariableLengths() {
 		return this.variableLengths;
 	}
 
@@ -294,7 +296,9 @@ public class ArrayStatement extends AbstractStatement {
 		Set<VariableReference> references = new LinkedHashSet<VariableReference>();
 		references.add(retval);
 		if(hasVariableLengths()) {
-			references.addAll(variableLengths);
+			for(IntPrimitiveStatement statement : variableLengths) {
+				references.add(statement.getReturnValue());
+			}
 		}
 		return references;
 	}
@@ -439,7 +443,7 @@ public class ArrayStatement extends AbstractStatement {
 		((ArrayReference) retval).setLengths(lengths);
 	}
 
-	public void setLengths(VariableReference[] lengths) {
+	public void setLengths(IntPrimitiveStatement[] lengths) {
 		this.variableLengths = Arrays.asList(lengths);
 		((ArrayReference) retval).setLengths(lengths);
 	}

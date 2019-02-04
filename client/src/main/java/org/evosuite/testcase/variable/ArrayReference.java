@@ -27,6 +27,7 @@ import org.evosuite.testcase.statements.Statement;
 import org.evosuite.testcase.TestCase;
 import org.evosuite.testcase.statements.ArrayStatement;
 import org.evosuite.testcase.statements.AssignmentStatement;
+import org.evosuite.testcase.statements.numeric.IntPrimitiveStatement;
 import org.evosuite.utils.LoggingUtils;
 import org.evosuite.utils.generic.GenericClass;
 
@@ -44,7 +45,7 @@ public class ArrayReference extends VariableReferenceImpl {
 	private static final long serialVersionUID = 3309591356542131910L;
 
 	private int[] lengths;
-	private List<VariableReference> variableLengths;
+	private List<IntPrimitiveStatement> variableLengths;
 
 	/**
 	 * <p>
@@ -61,7 +62,7 @@ public class ArrayReference extends VariableReferenceImpl {
 		        new int[ArrayStatement.determineDimensions(clazz)]);
 	}
 
-	public ArrayReference(TestCase tc, GenericClass clazz, VariableReference... lengths) {
+	public ArrayReference(TestCase tc, GenericClass clazz, IntPrimitiveStatement... lengths) {
 		super(tc, clazz);
 		assert (lengths.length > 0);
 		setLengths(lengths);
@@ -113,7 +114,7 @@ public class ArrayReference extends VariableReferenceImpl {
 		return lengths[0];
 	}
 
-	public VariableReference getVariableLength() {
+	public IntPrimitiveStatement getVariableLength() {
 		return this.variableLengths.get(0);
 	}
 
@@ -160,7 +161,7 @@ public class ArrayReference extends VariableReferenceImpl {
 			this.lengths[i] = lengths[i];
 	}
 
-	public void setLengths(VariableReference[] lengths) {
+	public void setLengths(IntPrimitiveStatement[] lengths) {
 		this.variableLengths = Arrays.asList(lengths);
 	}
 	/**
@@ -176,7 +177,7 @@ public class ArrayReference extends VariableReferenceImpl {
 			if(this.lengths != null) {
 				otherArray.setLengths(this.lengths);
 			} else {
-				otherArray.setLengths((VariableReference[])this.variableLengths.toArray());
+				otherArray.setLengths((IntPrimitiveStatement[])this.variableLengths.toArray());
 			}
 			return otherArray;
 		} else {
